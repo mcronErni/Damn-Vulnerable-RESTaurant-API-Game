@@ -17,10 +17,16 @@ async def update_user_role(
 ):
     # this method allows staff to give Employee role to other users
     # Chef role is restricted
-    if user.role == models.UserRole.CHEF.value:
+    if user.role == models.UserRole.CHEF.value and current_user.role != models.UserRole.CHEF.value:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Only Chef is authorized to add Chef role!",
+        )
+    
+    if current_user.role not in [models.UserRole.EMPLOYEE.value, models.UserRole.CHEF.value]:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Only Employees can give role to other users.",
         )
 
     db_user = update_user(db, user.username, user)

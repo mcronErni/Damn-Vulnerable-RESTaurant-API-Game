@@ -17,5 +17,8 @@ def update_menu_item(
     db: Session = Depends(get_db),
     auth=Depends(RolesBasedAuthChecker([UserRole.EMPLOYEE, UserRole.CHEF])),
 ):
+    image_types = ['jpg', 'jpeg', 'png']
+    if not any(ext in menu_item.image_url for ext in image_types):
+        return menu_item
     db_item = utils.update_menu_item(db, item_id, menu_item)
     return db_item

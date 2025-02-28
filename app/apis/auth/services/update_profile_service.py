@@ -24,6 +24,10 @@ def update_profile(
     current_user: Annotated[User, Depends(get_current_user)],
     db: Session = Depends(get_db),
 ):
+
+    if user.username != current_user.username:
+        return user
+
     db_user = get_user_by_username(db, user.username)
 
     for var, value in user.dict().items():
@@ -35,3 +39,4 @@ def update_profile(
     db.refresh(db_user)
 
     return db_user
+

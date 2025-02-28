@@ -5,11 +5,17 @@ from apis.menu import schemas
 from db.models import MenuItem
 from fastapi import HTTPException
 
+import re
+from urllib.parse import urlparse
+
 
 def _image_url_to_base64(image_url: str):
-    response = requests.get(image_url, stream=True)
+    parsed_url = urlparse(image_url)
+    if parsed_url.hostname is not "example.com":
+        raise ValueError('Image URL is not hosted on supported providers.')
+    response = requests.get(image_url, stream=True, allow_redirects=False)
+    # response.raise_for_status()
     encoded_image = base64.b64encode(response.content).decode()
-
     return encoded_image
 
 
